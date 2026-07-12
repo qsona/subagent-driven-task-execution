@@ -27,7 +27,19 @@ if File.file?(skill_path)
     begin
       frontmatter = YAML.safe_load(match[1], aliases: false)
       errors << "SKILL.md frontmatter name is invalid" unless frontmatter["name"] == "subagent-driven-task-execution"
-      errors << "SKILL.md frontmatter description is missing" unless frontmatter["description"].is_a?(String) && !frontmatter["description"].empty?
+      description = frontmatter["description"]
+      errors << "SKILL.md frontmatter description is missing" unless description.is_a?(String) && !description.empty?
+      if description.is_a?(String)
+        required_description_phrases = [
+          "Claude Fable 5",
+          "トップレベルセッション",
+          "サブエージェントでは自動使用しない"
+        ]
+        missing_phrases = required_description_phrases.reject { |phrase| description.include?(phrase) }
+        unless missing_phrases.empty?
+          errors << "SKILL.md description is missing invocation policy phrases: #{missing_phrases.join(', ')}"
+        end
+      end
     rescue Psych::SyntaxError => e
       errors << "SKILL.md frontmatter is invalid YAML: #{e.message.lines.first.strip}"
     end
@@ -42,7 +54,7 @@ if File.file?(metadata_path)
     metadata = YAML.safe_load(File.read(metadata_path, encoding: "UTF-8"), aliases: false)
     errors << "agents/openai.yaml interface is missing" unless metadata["interface"].is_a?(Hash)
     implicit = metadata.dig("policy", "allow_implicit_invocation")
-    errors << "agents/openai.yaml implicit invocation policy must be boolean" unless [true, false].include?(implicit)
+    errors << "agents/openai.yaml must disable implicit invocation for Codex" unless implicit == false
   rescue Psych::SyntaxError => e
     errors << "agents/openai.yaml is invalid YAML: #{e.message.lines.first.strip}"
   end

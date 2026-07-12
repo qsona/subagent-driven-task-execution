@@ -38,10 +38,13 @@ environment makes them available and permits their use.
 
 ## Supported environments
 
-- **Codex:** `SKILL.md` plus `agents/openai.yaml`. The metadata allows implicit
-  invocation for substantial requests.
+- **Codex:** `SKILL.md` plus `agents/openai.yaml`. The metadata disables
+  implicit invocation, so the user must explicitly select the skill.
 - **Claude Code:** `SKILL.md`. Install it as a personal or project skill using
-  the directory conventions supported by your Claude Code version.
+  the directory conventions supported by your Claude Code version. The skill
+  description asks Claude to invoke it automatically only for substantial
+  requests in a top-level Claude Fable 5 session. Explicit invocation remains
+  available with any model.
 
 Host capabilities and skill installation conventions can change. Consult the
 current documentation for your host before installation.
@@ -134,9 +137,13 @@ Example request:
 
 ## Operational notice
 
-For substantial requests, Codex may invoke this skill implicitly because
-`agents/openai.yaml` enables implicit invocation. Explicit invocation remains
-available when you want to require the workflow.
+In a top-level Claude Fable 5 session, Claude Code may invoke this skill
+automatically for substantial requests that match its frontmatter description.
+The description tells Sonnet, Opus, Haiku, and subagents not to invoke it
+automatically. This is model-guided behavior rather than a hard runtime gate.
+Explicit invocation remains available with any Claude model. In Codex,
+`agents/openai.yaml` disables implicit invocation, so use
+`$subagent-driven-task-execution` to invoke it explicitly.
 
 Depending on the request and host permissions, the workflow may delegate work
 to subagents and may write progress records or requested deliverables into the

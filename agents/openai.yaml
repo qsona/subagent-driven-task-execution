@@ -4,4 +4,4 @@ interface:
   default_prompt: "$subagent-driven-task-execution を使って、この依頼を分解・委譲し、レビューを通して完遂してください。"
 
 policy:
-  allow_implicit_invocation: true
+  allow_implicit_invocation: false
