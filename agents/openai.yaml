@@ -1,0 +1,7 @@
+interface:
+  display_name: "サブエージェント駆動タスク実行"
+  short_description: "委譲・独立レビュー・再検証で複雑な仕事を確実に完遂"
+  default_prompt: "$subagent-driven-task-execution を使って、この依頼を分解・委譲し、レビューを通して完遂してください。"
+
+policy:
+  allow_implicit_invocation: true

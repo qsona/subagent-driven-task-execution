@@ -1,0 +1,54 @@
+name: Validate and package
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate-and-package:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Validate skill and repository contents
+        run: ruby scripts/validate.rb
+
+      - name: Test secret-scan detection
+        run: ruby test/validate_secret_scan_test.rb
+
+      - name: Build Codex and Claude archives
+        run: bash scripts/package.sh
+
+      - name: Verify archive contents and checksums
+        run: |
+          diff -u <(printf '%s\n' \
+            subagent-driven-task-execution/ \
+            subagent-driven-task-execution/LICENSE \
+            subagent-driven-task-execution/SKILL.md \
+            subagent-driven-task-execution/THIRD_PARTY_NOTICES.md \
+            subagent-driven-task-execution/agents/ \
+            subagent-driven-task-execution/agents/openai.yaml | sort) \
+            <(unzip -Z1 dist/subagent-driven-task-execution-codex.zip | sort)
+          diff -u <(printf '%s\n' \
+            subagent-driven-task-execution/ \
+            subagent-driven-task-execution/LICENSE \
+            subagent-driven-task-execution/SKILL.md \
+            subagent-driven-task-execution/THIRD_PARTY_NOTICES.md | sort) \
+            <(unzip -Z1 dist/subagent-driven-task-execution-claude.zip | sort)
+          cd dist
+          shasum -a 256 -c SHA256SUMS
+
+      - name: Upload release-ready archives
+        uses: actions/upload-artifact@v4
+        with:
+          name: subagent-driven-task-execution-release-assets
+          path: |
+            dist/subagent-driven-task-execution-codex.zip
+            dist/subagent-driven-task-execution-claude.zip
+            dist/SHA256SUMS
+          if-no-files-found: error
