@@ -41,9 +41,16 @@ environment makes them available and permits their use.
 - **Codex:** `SKILL.md` plus `agents/openai.yaml`. The metadata disables
   implicit invocation, so the user must explicitly select the skill.
 - **Claude Code:** `SKILL.md`. Install it as a personal or project skill using
-  the directory conventions supported by your Claude Code version. The skill
-  description asks Claude to invoke it automatically only for substantial
-  requests in a top-level Claude Fable 5 session. Explicit invocation remains
+  the directory conventions supported by your Claude Code version. In a
+  top-level session using Claude Fable, the skill description asks Claude to
+  invoke it automatically every time a request involves actual work —
+  research, analysis, planning, document or material creation, spreadsheets,
+  development, fixes, or review — including requests phrased as questions and
+  follow-up work raised mid-conversation, even when the work looks small. The
+  decision to execute directly or run the full workflow is made after
+  invocation, not before. The only exclusion is answering a simple question
+  with no accompanying work. The description does not ask Claude to invoke
+  the skill automatically on other models. Explicit invocation remains
   available with any model.
 
 Host capabilities and skill installation conventions can change. Consult the
@@ -137,13 +144,17 @@ Example request:
 
 ## Operational notice
 
-In a top-level Claude Fable 5 session, Claude Code may invoke this skill
-automatically for substantial requests that match its frontmatter description.
-The description tells Sonnet, Opus, Haiku, and subagents not to invoke it
-automatically. This is model-guided behavior rather than a hard runtime gate.
-Explicit invocation remains available with any Claude model. In Codex,
-`agents/openai.yaml` disables implicit invocation, so use
-`$subagent-driven-task-execution` to invoke it explicitly.
+In a top-level session using Claude Fable, Claude Code may invoke this skill
+automatically whenever a request involves actual work — research, analysis,
+planning, document or material creation, spreadsheets, development, fixes, or
+review — including requests raised mid-conversation, even when the work looks
+small; whether to execute directly or run the full workflow is decided after
+invocation. The description does not ask Claude to invoke the skill
+automatically on models other than Claude Fable. This is model-guided
+behavior rather than a hard runtime gate. Explicit invocation remains
+available with any Claude model. In Codex, `agents/openai.yaml` disables
+implicit invocation, so use `$subagent-driven-task-execution` to invoke it
+explicitly.
 
 Depending on the request and host permissions, the workflow may delegate work
 to subagents and may write progress records or requested deliverables into the

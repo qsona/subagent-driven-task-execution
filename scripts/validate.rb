@@ -31,9 +31,9 @@ if File.file?(skill_path)
       errors << "SKILL.md frontmatter description is missing" unless description.is_a?(String) && !description.empty?
       if description.is_a?(String)
         required_description_phrases = [
-          "Claude Fable 5",
           "トップレベルセッション",
-          "サブエージェントでは自動使用しない"
+          "Claude Fable 以外のモデルでは自動起動しない",
+          "明示指定した場合はモデルを問わず使用する"
         ]
         missing_phrases = required_description_phrases.reject { |phrase| description.include?(phrase) }
         unless missing_phrases.empty?
